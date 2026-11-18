@@ -54,6 +54,9 @@ for a, b in zip(srows[0::2], srows[1::2]):
 # rows measured after the paper (tools/extra_native.json), placed after the last row of the same native harness
 extra = json.loads((pathlib.Path(__file__).resolve().parent / "extra_native.json").read_text())
 for x in extra:
+    have = [r for r in native if r["llm"] == x["llm"]]
+    if have:  # the row is in the paper's table by now: keep the table's numbers, only mark it as new
+        have[0]["extra"] = True; have[0]["note"] = x["note"]; continue
     last = max(i for i, r in enumerate(native) if r["harness"] == x["harness"])
     native.insert(last + 1, x)
 gains = [round(r["ours"]["sr"] - r["native"]["sr"], 1) for r in native]

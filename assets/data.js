@@ -405,13 +405,16 @@ window.NAVRSI_DATA = {
    "harness": "Codex CLI",
    "vendor": "OpenAI",
    "logo": "openai",
-   "extra": true,
    "native": {
     "ne": 3.0,
     "osr": 88.0,
     "sr": 82.0,
     "spl": 70.9,
-    "cost": null
+    "turns": 26.5,
+    "cost": 0.097,
+    "tokens": 323.0,
+    "tokens_sr": 394.0,
+    "cost_sr": 0.118
    },
    "native_sd": {
     "ne": 0.02,
@@ -424,7 +427,11 @@ window.NAVRSI_DATA = {
     "osr": 94.3,
     "sr": 89.0,
     "spl": 78.9,
-    "cost": null
+    "turns": 22.5,
+    "cost": 0.099,
+    "tokens": 131.0,
+    "tokens_sr": 148.0,
+    "cost_sr": 0.112
    },
    "ours_sd": {
     "ne": 0.64,
@@ -432,20 +439,24 @@ window.NAVRSI_DATA = {
     "sr": 1.7,
     "spl": 0.5
    },
-   "note": "R2R-CE-100, medium effort, three runs each (2026-11-18); NavRSI runs r1,r2,r3; not in the paper's table"
+   "extra": true,
+   "note": "R2R-CE-100, medium effort, three runs each (2026-11-18); NavRSI runs r1,r2,r3; cost at the official list prices of 2026-11-18"
   },
   {
    "llm": "gpt-6.2-astra",
    "harness": "Codex CLI",
    "vendor": "OpenAI",
    "logo": "openai",
-   "extra": true,
    "native": {
     "ne": 1.8,
     "osr": 90.7,
     "sr": 89.7,
     "spl": 76.1,
-    "cost": null
+    "turns": 20.1,
+    "cost": 0.241,
+    "tokens": 212.0,
+    "tokens_sr": 237.0,
+    "cost_sr": 0.268
    },
    "native_sd": {
     "ne": 0.18,
@@ -458,7 +469,11 @@ window.NAVRSI_DATA = {
     "osr": 93.0,
     "sr": 91.7,
     "spl": 78.3,
-    "cost": null
+    "turns": 16.5,
+    "cost": 0.188,
+    "tokens": 77.0,
+    "tokens_sr": 84.0,
+    "cost_sr": 0.205
    },
    "ours_sd": {
     "ne": 0.31,
@@ -466,7 +481,8 @@ window.NAVRSI_DATA = {
     "sr": 1.2,
     "spl": 0.5
    },
-   "note": "R2R-CE-100, medium effort, three runs each (2026-11-18); NavRSI runs r2,r3,r4; not in the paper's table"
+   "extra": true,
+   "note": "R2R-CE-100, medium effort, three runs each (2026-11-18); NavRSI runs r2,r3,r4; cost at the official list prices of 2026-11-18"
   },
   {
    "llm": "gemini-3.8-flash",

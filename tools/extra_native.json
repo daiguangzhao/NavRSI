@@ -10,7 +10,9 @@
    "osr": 88.0,
    "sr": 82.0,
    "spl": 70.9,
-   "cost": null
+   "cost": 0.0969,
+   "turns": 26.5,
+   "tokens": 323
   },
   "native_sd": {
    "ne": 0.02,
@@ -23,7 +25,9 @@
    "osr": 94.3,
    "sr": 89.0,
    "spl": 78.9,
-   "cost": null
+   "cost": 0.0994,
+   "turns": 22.5,
+   "tokens": 131
   },
   "ours_sd": {
    "ne": 0.64,
@@ -31,7 +35,7 @@
    "sr": 1.7,
    "spl": 0.5
   },
-  "note": "R2R-CE-100, medium effort, three runs each (2026-11-18); NavRSI runs r1,r2,r3; not in the paper's table"
+  "note": "R2R-CE-100, medium effort, three runs each (2026-11-18); NavRSI runs r1,r2,r3; cost at the official list prices of 2026-11-18"
  },
  {
   "llm": "gpt-6.2-astra",
@@ -44,7 +48,9 @@
    "osr": 90.7,
    "sr": 89.7,
    "spl": 76.1,
-   "cost": null
+   "cost": 0.2406,
+   "turns": 20.1,
+   "tokens": 212
   },
   "native_sd": {
    "ne": 0.18,
@@ -57,7 +63,9 @@
    "osr": 93.0,
    "sr": 91.7,
    "spl": 78.3,
-   "cost": null
+   "cost": 0.1877,
+   "turns": 16.5,
+   "tokens": 77
   },
   "ours_sd": {
    "ne": 0.31,
@@ -65,6 +73,6 @@
    "sr": 1.2,
    "spl": 0.5
   },
-  "note": "R2R-CE-100, medium effort, three runs each (2026-11-18); NavRSI runs r2,r3,r4; not in the paper's table"
+  "note": "R2R-CE-100, medium effort, three runs each (2026-11-18); NavRSI runs r2,r3,r4; cost at the official list prices of 2026-11-18"
  }
 ]
