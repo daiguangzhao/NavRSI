@@ -51,8 +51,13 @@ for line in (A / "r2r_mip_compare.tex").read_text().splitlines():
 for a, b in zip(srows[0::2], srows[1::2]):
     assert a[0] == "Seed 0" and "NavRSI" in b[0] and a[1] == b[1], (a[:2], b[:2])
     seed.append({"llm": a[1], "seed": num(a[2])[0], "ours": num(b[2])[0]})
+# rows measured after the paper (tools/extra_native.json), placed after the last row of the same native harness
+extra = json.loads((pathlib.Path(__file__).resolve().parent / "extra_native.json").read_text())
+for x in extra:
+    last = max(i for i, r in enumerate(native) if r["harness"] == x["harness"])
+    native.insert(last + 1, x)
 gains = [round(r["ours"]["sr"] - r["native"]["sr"], 1) for r in native]
-gpt4 = [r for r in native if r["llm"] in ("gpt-6-luna", "gpt-6.1-terra", "gpt-6.1-sol", "gpt-6-astra")]
+gpt4 = [r for r in native if not r.get("extra") and r["llm"] in ("gpt-6-luna", "gpt-6.1-terra", "gpt-6.1-sol", "gpt-6-astra")]
 derived = {"n_llms": len(native), "n_vendors": len({r["vendor"] for r in native}), "n_improved_sr": sum(g > 0 for g in gains),
            "max_gain": max(gains), "max_gain_llm": native[gains.index(max(gains))]["llm"],
            "codex_cost_native": round(sum(r["native"]["cost"] for r in gpt4) / 4, 4), "codex_cost_ours": round(sum(r["ours"]["cost"] for r in gpt4) / 4, 4)}

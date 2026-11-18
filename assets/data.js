@@ -401,6 +401,74 @@ window.NAVRSI_DATA = {
    }
   },
   {
+   "llm": "gpt-6.2-sol",
+   "harness": "Codex CLI",
+   "vendor": "OpenAI",
+   "logo": "openai",
+   "extra": true,
+   "native": {
+    "ne": 3.0,
+    "osr": 88.0,
+    "sr": 82.0,
+    "spl": 70.9,
+    "cost": null
+   },
+   "native_sd": {
+    "ne": 0.02,
+    "osr": 2.0,
+    "sr": 2.0,
+    "spl": 2.4
+   },
+   "ours": {
+    "ne": 2.18,
+    "osr": 94.3,
+    "sr": 89.0,
+    "spl": 78.9,
+    "cost": null
+   },
+   "ours_sd": {
+    "ne": 0.64,
+    "osr": 2.1,
+    "sr": 1.7,
+    "spl": 0.5
+   },
+   "note": "R2R-CE-100, medium effort, three runs each (2026-11-18); NavRSI runs r1,r2,r3; not in the paper's table"
+  },
+  {
+   "llm": "gpt-6.2-astra",
+   "harness": "Codex CLI",
+   "vendor": "OpenAI",
+   "logo": "openai",
+   "extra": true,
+   "native": {
+    "ne": 1.8,
+    "osr": 90.7,
+    "sr": 89.7,
+    "spl": 76.1,
+    "cost": null
+   },
+   "native_sd": {
+    "ne": 0.18,
+    "osr": 1.2,
+    "sr": 1.2,
+    "spl": 1.1
+   },
+   "ours": {
+    "ne": 1.92,
+    "osr": 93.0,
+    "sr": 91.7,
+    "spl": 78.3,
+    "cost": null
+   },
+   "ours_sd": {
+    "ne": 0.31,
+    "osr": 1.0,
+    "sr": 1.2,
+    "spl": 0.5
+   },
+   "note": "R2R-CE-100, medium effort, three runs each (2026-11-18); NavRSI runs r2,r3,r4; not in the paper's table"
+  },
+  {
    "llm": "gemini-3.8-flash",
    "harness": "Antigravity",
    "vendor": "Google",
@@ -867,9 +935,9 @@ window.NAVRSI_DATA = {
   }
  ],
  "derived": {
-  "n_llms": 15,
+  "n_llms": 17,
   "n_vendors": 4,
-  "n_improved_sr": 15,
+  "n_improved_sr": 17,
   "max_gain": 11.3,
   "max_gain_llm": "gpt-5.6-sol",
   "codex_cost_native": 0.2828,
