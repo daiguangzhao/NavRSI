@@ -1,0 +1,4 @@
+# one-file preview, rebuilt by tools/build_single.py; not part of the site
+preview_single.html
+__pycache__/
+.DS_Store
