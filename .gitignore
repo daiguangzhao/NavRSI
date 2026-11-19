@@ -2,3 +2,5 @@
 preview_single.html
 __pycache__/
 .DS_Store
+# before/after screenshots for review; not part of the site
+preview_shots/
