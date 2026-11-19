@@ -1325,81 +1325,38 @@ var D = window.NAVRSI_DATA || {native: [], sota: [], real: [], derived: {}};
   boot(false);
 })();
 
-/* ---------------------------------------------------------------- page-wide starfield: three depths, scroll and pointer parallax, links to the cursor, meteors,
-   and the foil sweep: now and then a band of light crosses the page, the stars in it flare, and the glitter it passes over lights up */
+/* ---------------------------------------------------------------- page-wide starfield: three depths, scroll and pointer parallax, links to the cursor, meteors */
 (function(){
   var cv = $("#sky"); if (!cv || !cv.getContext || REDUCE) return;
-  var ctx = cv.getContext("2d"), W = 0, H = 0, dpr = 1, S = [], raf = 0, last = 0, clock = 0, mx = -9999, my = -9999, px = 0, py = 0, met = null, nextMet = 3.5;
-  var G = [], sw = null, nextSw = 1.2, lastSw = -99, NX = .927, NY = .375, PAL = [], rest = false;
-  (function(){ var st = [[88, 225, 255], [91, 140, 255], [169, 124, 255]]; for (var i = 0; i < 16; i++){ var t = i / 15 * 2, k = Math.min(1, Math.floor(t)), f = t - k, a = st[k], b = st[k + 1];
-    PAL.push("rgba(" + Math.round(a[0] + (b[0] - a[0]) * f) + "," + Math.round(a[1] + (b[1] - a[1]) * f) + "," + Math.round(a[2] + (b[2] - a[2]) * f) + ","); } })();
+  var ctx = cv.getContext("2d"), W = 0, H = 0, dpr = 1, S = [], raf = 0, last = 0, clock = 0, mx = -9999, my = -9999, px = 0, py = 0, met = null, nextMet = 3.5, rest = false;
   function size(){
     dpr = Math.min(window.devicePixelRatio || 1, 1.5); W = window.innerWidth; H = window.innerHeight; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-    var n = Math.round(Math.min(190, W * H / 9500)), i; S = [];
-    for (i = 0; i < n; i++){ var z = Math.random(); z = .22 + .78 * z * z;
-      S.push({x: Math.random() * W, y: Math.random() * (H + 60), z: z, r: .5 + Math.random() * 1.2, vx: (Math.random() - .5) * 7, vy: (Math.random() - .5) * 7, tw: .6 + Math.random() * 2.2, ph: Math.random() * 6.283, c: Math.random(), sx: 0, sy: 0, g: 0}); }
-    // the glitter: unseen until the band of light reaches it
-    var n2 = Math.round(Math.min(3000, W * H / 430)); G = [];
-    for (i = 0; i < n2; i++){ var u = Math.random(); G.push({x: Math.random() * (W + 80) - 40, y: Math.random() * (H + 60), z: .35 + .65 * Math.random(), r: .5 + Math.random() * .75, star: Math.random() > .978,
-      ph: Math.random() * 6.283, tw: 2 + Math.random() * 5, c: u > .95 ? 2 : (u > .8 ? 1 : 0)}); }
+    var n = Math.round(Math.min(190, W * H / 9500)); S = [];
+    for (var i = 0; i < n; i++){ var z = Math.random(); z = .22 + .78 * z * z;
+      S.push({x: Math.random() * W, y: Math.random() * (H + 60), z: z, r: .5 + Math.random() * 1.2, vx: (Math.random() - .5) * 7, vy: (Math.random() - .5) * 7, tw: .6 + Math.random() * 2.2, ph: Math.random() * 6.283, c: Math.random(), sx: 0, sy: 0}); }
   }
-  window.__navrsiSweep = function(){ if (!sw && clock - lastSw > 5) nextSw = Math.min(nextSw, clock + .3); };
-  // for checking: __navrsiSky(k) holds the sweep still at the fraction k of its way, __navrsiSky(-1) lets it go
-  if (/[?&]herodebug=1/.test(location.search)) window.__navrsiSky = function(k){ if (k != null) sw = k < 0 ? null : {t0: clock, dur: 5, dir: 1, hold: k};
-    return {clock: clock, sweep: sw, next: nextSw, stars: S.length, glitter: G.length}; };
   function tick(now){
     raf = requestAnimationFrame(tick);
     var dt = last ? Math.min(.1, (now - last) / 1000) : .016; last = now; clock += dt;
+    // while the hero covers the view the sky rests, wiped clean (the hero's lower edge is see-through)
     if (window.__heroVisible && window.scrollY < window.innerHeight * .25){ if (!rest){ rest = true; ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height); } return; }
     rest = false;
     var sy = window.scrollY, i, j, a, b, dx, dy, d2, HH = H + 60, kp = 1 - Math.exp(-dt * 4);
     px += ((mx > -9000 ? mx / W - .5 : 0) - px) * kp; py += ((my > -9000 ? my / H - .5 : 0) - py) * kp;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
-    var band = null;
-    if (!sw && clock > nextSw) sw = {t0: clock, dur: 3.2 + W / 800, dir: Math.random() < .8 ? 1 : -1};
-    if (sw){
-      var kq = sw.hold != null ? sw.hold : (clock - sw.t0) / sw.dur;
-      if (kq >= 1){ sw = null; lastSw = clock; nextSw = clock + 12 + Math.random() * 8; }
-      else { var eq = kq * kq * (3 - 2 * kq), sig = Math.max(58, Math.min(118, W * .075)), LL = W * NX + H * NY;
-        band = {pos: (sw.dir > 0 ? eq : 1 - eq) * (LL + sig * 6) - sig * 3, sig: sig, env: Math.min(1, kq * 7, (1 - kq) * 7)}; }
-    }
     for (i = 0; i < S.length; i++){ a = S[i]; a.x += a.vx * dt * a.z; a.y += a.vy * dt * a.z;
       if (a.x < -20) a.x += W + 40; else if (a.x > W + 20) a.x -= W + 40;
       var yy = (a.y - sy * a.z * .16) % HH; if (yy < 0) yy += HH;
-      a.sx = a.x - px * 26 * a.z; a.sy = yy - 30 - py * 18 * a.z; a.g = 0;
-      if (band){ var ds = (a.sx * NX + a.sy * NY - band.pos) / band.sig; if (ds > -2.4 && ds < 2.4){ a.g = Math.exp(-ds * ds) * band.env; a.sy -= a.g * 5; } } }
+      a.sx = a.x - px * 26 * a.z; a.sy = yy - 30 - py * 18 * a.z; }
     ctx.lineWidth = 1;
     for (i = 0; i < S.length; i++){ a = S[i]; if (a.z < .62) continue;
       for (j = i + 1; j < S.length; j++){ b = S[j]; if (b.z < .62) continue; dx = a.sx - b.sx; dy = a.sy - b.sy; d2 = dx * dx + dy * dy;
         if (d2 < 19600){ ctx.strokeStyle = "rgba(120,160,255," + (.17 * (1 - d2 / 19600)).toFixed(3) + ")"; ctx.beginPath(); ctx.moveTo(a.sx, a.sy); ctx.lineTo(b.sx, b.sy); ctx.stroke(); } } }
     if (mx > -9000) for (i = 0; i < S.length; i++){ a = S[i]; dx = a.sx - mx; dy = a.sy - my; d2 = dx * dx + dy * dy;
       if (d2 < 36100){ ctx.strokeStyle = "rgba(88,225,255," + (.34 * (1 - d2 / 36100) * a.z).toFixed(3) + ")"; ctx.beginPath(); ctx.moveTo(mx, my); ctx.lineTo(a.sx, a.sy); ctx.stroke(); } }
-    for (i = 0; i < S.length; i++){ a = S[i]; var al = Math.min(1, (.25 + .75 * a.z) * (.62 + .38 * Math.sin(clock * a.tw + a.ph)) * (1 + 2.2 * a.g));
+    for (i = 0; i < S.length; i++){ a = S[i]; var al = (.25 + .75 * a.z) * (.62 + .38 * Math.sin(clock * a.tw + a.ph));
       ctx.fillStyle = (a.c > .93 ? "rgba(255,197,107," : (a.c > .5 ? "rgba(170,200,255," : "rgba(140,230,255,")) + al.toFixed(3) + ")";
-      ctx.beginPath(); ctx.arc(a.sx, a.sy, a.r * (.5 + a.z * .9) * (1 + .45 * a.g), 0, 6.283); ctx.fill(); }
-    if (band){
-      ctx.globalCompositeOperation = "lighter";
-      ctx.save(); ctx.transform(NX, NY, -NY, NX, 0, 0);          // x now runs across the band
-      var wash = ctx.createLinearGradient(band.pos - band.sig * 2.6, 0, band.pos + band.sig * 2.6, 0);     // a wide soft light with a narrow brighter heart
-      wash.addColorStop(0, "rgba(88,200,255,0)"); wash.addColorStop(.38, "rgba(105,175,255," + (.045 * band.env).toFixed(3) + ")"); wash.addColorStop(.5, "rgba(150,185,255," + (.12 * band.env).toFixed(3) + ")");
-      wash.addColorStop(.62, "rgba(140,150,255," + (.045 * band.env).toFixed(3) + ")"); wash.addColorStop(1, "rgba(169,124,255,0)");
-      ctx.fillStyle = wash; ctx.fillRect(band.pos - band.sig * 2.6, -(W + H), band.sig * 5.2, 2 * (W + H)); ctx.restore();
-      for (i = 0; i < G.length; i++){ a = G[i];
-        var gx = a.x - px * 34 * a.z, gy = (a.y - sy * a.z * .22) % HH; if (gy < 0) gy += HH; gy = gy - 30 - py * 22 * a.z;
-        var dg = (gx * NX + gy * NY - band.pos) / band.sig; if (dg > 2.3 || dg < -2.3) continue;
-        var gg = Math.exp(-dg * dg) * band.env * (.5 + .5 * Math.sin(clock * a.tw + a.ph)); if (gg < .05) continue;
-        gy -= gg * 6;
-        var ci = (gx / W * 15) | 0; if (ci < 0) ci = 0; else if (ci > 15) ci = 15;
-        var cs = a.c === 2 ? "rgba(255,205,125," : (a.c === 1 ? "rgba(255,255,255," : PAL[ci]), ga = gg * (.68 + .32 * a.z);
-        ctx.fillStyle = cs + (ga * .13).toFixed(3) + ")"; ctx.fillRect(gx - a.r * 3, gy - a.r * 3, a.r * 6, a.r * 6);     // a faint glow under each grain
-        ctx.fillStyle = cs + ga.toFixed(3) + ")";
-        if (a.star && gg > .3){                                  // a four-point star with tapering arms
-          var arm = 3.2 + 6.5 * gg * a.z, wd = .55 + .5 * gg;
-          ctx.beginPath(); ctx.moveTo(gx - arm, gy); ctx.lineTo(gx - wd, gy - wd); ctx.lineTo(gx, gy - arm); ctx.lineTo(gx + wd, gy - wd); ctx.lineTo(gx + arm, gy); ctx.lineTo(gx + wd, gy + wd); ctx.lineTo(gx, gy + arm); ctx.lineTo(gx - wd, gy + wd); ctx.closePath(); ctx.fill();
-        } else ctx.fillRect(gx - a.r, gy - a.r, a.r * 2, a.r * 2);
-      }
-      ctx.globalCompositeOperation = "source-over";
-    }
+      ctx.beginPath(); ctx.arc(a.sx, a.sy, a.r * (.5 + a.z * .9), 0, 6.283); ctx.fill(); }
     if (!met && clock > nextMet){ var ang = .35 + Math.random() * .3, sp = 760 + Math.random() * 380; met = {x: Math.random() * W * .7 - 40, y: -30 + Math.random() * H * .35, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp, t: 0, life: .75 + Math.random() * .5}; }
     if (met){ met.t += dt; met.x += met.vx * dt; met.y += met.vy * dt;
       var kk = met.t / met.life, fade = Math.sin(Math.PI * Math.min(1, kk)), len = 170, sp2 = Math.sqrt(met.vx * met.vx + met.vy * met.vy), nx = met.vx / sp2, ny = met.vy / sp2;
@@ -1439,9 +1396,8 @@ var D = window.NAVRSI_DATA || {native: [], sota: [], real: [], derived: {}};
   if ("IntersectionObserver" in window && !REDUCE){
     var io = new IntersectionObserver(function(en){ en.forEach(function(e){ if (!e.isIntersecting) return; var el = e.target; el.classList.add("in"); io.unobserve(el);
       $$("[data-count]", el).forEach(countUp); el.dispatchEvent(new CustomEvent("revealed"));
-      // once a card has settled it answers the pointer quickly; a new heading calls a sweep of light over the page
-      if (el.classList.contains("card")) setTimeout(function(){ el.classList.add("done"); }, 1300 + (parseFloat(el.style.getPropertyValue("--d")) || 0));
-      if (el.tagName === "H2" && window.__navrsiSweep) window.__navrsiSweep(); }); }, {threshold: .12, rootMargin: "0px 0px -6% 0px"});
+      // once a card has settled it answers the pointer quickly
+      if (el.classList.contains("card")) setTimeout(function(){ el.classList.add("done"); }, 1300 + (parseFloat(el.style.getPropertyValue("--d")) || 0)); }); }, {threshold: .12, rootMargin: "0px 0px -6% 0px"});
     revs.forEach(function(el){ io.observe(el); });
   } else revs.forEach(function(el){ el.classList.add("in"); el.classList.add("done"); el.dispatchEvent(new CustomEvent("revealed")); });
 

@@ -28,14 +28,12 @@ A static site: `index.html` and `assets/`, with no build step and no framework. 
 - `prefers-reduced-motion` shows one still frame and stops every animation.
 - URL switches for checking: `?nogl=1` forces the fallback, `?hq=1` locks the top quality level, and `?herodebug=1`
   exposes `window.__navrsiHero.show(to, from, progress, time)` to hold one moment still (`from = 4` is the opening
-  cloud) and `window.__navrsiSky(k)` to hold the page-wide sweep at the fraction `k` of its way.
+  cloud).
 
 ## The foil sweep on the rest of the page
 
 The light that sweeps over the hero's shapes returns further down as a band of light carrying glitter:
 
-- Background: now and then, and whenever a new section heading comes into view, a band crosses the star field. The
-  stars inside it flare and the glitter it passes over lights up.
 - Cards, headings and the closing statement: the band crosses each of them once when they come into view. Under the
   cursor a card shows the same glitter.
 - Gradient text and the headline numbers get a narrow sheen, the figures a pale band of coloured light.
