@@ -394,6 +394,13 @@ figcaption,.cap{color:var(--muted);font-size:14.5px;margin-top:13px;max-width:62
 .rw{display:grid;grid-template-columns:1fr 1.25fr;gap:16px;margin-top:26px}
 .rw-bars{display:grid;gap:14px;margin-top:8px}
 .rw-bars .lb-row{grid-template-columns:96px 1fr}
+.rwvid{margin-top:4px}
+.vcard{margin:0;padding:0;display:flex;flex-direction:column}
+.vcard video{display:block;width:100%;height:auto;aspect-ratio:960/544;background:#05070f;object-fit:cover}
+.vcard figcaption{padding:16px 20px 18px}
+.vlab{display:block;font-family:var(--mono);font-size:11.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+.card p.vins{color:#d6defa;font-size:15px;font-style:italic;line-height:1.6}
+.vnote{margin:8px 2px 0;text-align:right;font-family:var(--mono);font-size:11px;letter-spacing:.4px;color:var(--dim)}
 @media (max-width:900px){.rw{grid-template-columns:1fr}}
 
 /* bibtex */
@@ -747,6 +754,23 @@ footer a:hover{color:var(--text)}
     <p class="lede reveal">The final harness drives a Unitree G1 humanoid with a single head-mounted RGB camera, without any real-world data or tuning. 25 real-world instructions, each run four times.</p>
     <div class="figscroll reveal"><figure class="fig" data-zoom="assets/realworld.webp"><img src="assets/realworld.webp" alt="Real-world demo of NavRSI on the Unitree G1 robot" loading="lazy" width="2400" height="708"><span class="zoom">Click to zoom</span></figure></div>
     <p class="cap reveal"><b>Real-world demo on the Unitree G1.</b> The navigator keeps turning right while &ldquo;the sink is still outside the image&rdquo;, and stops only once &ldquo;the sink basin and faucet&rdquo; are in view.</p>
+    <h3 class="sub reveal">Real-robot runs</h3>
+    <p class="subp reveal">Two more instructions on the Unitree G1, recorded by a third-person camera.</p>
+    <div class="grid2 rwvid">
+      <figure class="card vcard reveal">
+        <video class="rwv" muted loop playsinline controls preload="none" poster="assets/videos/g1_run1.webp" width="960" height="544" aria-label="Unitree G1 following instruction 1">
+          <source data-src="assets/videos/g1_run1.mp4" type="video/mp4">
+        </video>
+        <figcaption><span class="vlab">Instruction 1</span><p class="vins">&ldquo;Move forward to the white sign on the wooden wall, turn left at the first intersection, and proceed to the white counter with cups on it. Then turn right and continue forward, stopping in front of the tall potted plant by the window.&rdquo;</p></figcaption>
+      </figure>
+      <figure class="card vcard reveal" style="--d:100ms">
+        <video class="rwv" muted loop playsinline controls preload="none" poster="assets/videos/g1_run2.webp" width="960" height="544" aria-label="Unitree G1 following instruction 2">
+          <source data-src="assets/videos/g1_run2.mp4" type="video/mp4">
+        </video>
+        <figcaption><span class="vlab">Instruction 2</span><p class="vins">&ldquo;Walk toward the white counter with cups on it, then turn right at the first intersection. Go straight along the passage between the white bookshelf and the white wall, passing several gray round stools. Turn left at the next intersection and stop in front of the black chair beside the gray partition.&rdquo;</p></figcaption>
+      </figure>
+    </div>
+    <p class="vnote reveal">Videos at 3&times; speed</p>
     <div class="rw">
       <div class="card reveal"><h3>Success rate, real world</h3><p style="margin-bottom:10px">All three methods use GPT-6-Astra. Baselines use their own sensors.</p><div class="rw-bars" id="realChart"></div></div>
       <div class="card reveal" style="--d:100ms"><h3>What transfers</h3>
@@ -1570,6 +1594,17 @@ var D = window.NAVRSI_DATA || {native: [], sota: [], real: [], derived: {}};
     var box = seed.closest(".reveal");
     if (box && !box.classList.contains("in")) box.addEventListener("revealed", function(){ setTimeout(function(){ place(true); }, 150); }, {once: true}); else setTimeout(function(){ place(true); }, 60);
   }
+})();
+
+/* ---------------------------------------------------------------- real-robot videos: load near the viewport, play while in view */
+(function(){
+  var vids = $$("video.rwv"); if (!vids.length) return;
+  var load = function(v){ if (v.getAttribute("data-loaded")) return; v.setAttribute("data-loaded", "1"); $$("source", v).forEach(function(x){ x.src = x.getAttribute("data-src"); }); v.load(); };
+  var play = function(v){ if (REDUCE) return; var r = v.play(); if (r && r.catch) r.catch(function(){}); };
+  if (!("IntersectionObserver" in window)){ vids.forEach(load); return; }
+  var near = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting){ load(e.target); near.unobserve(e.target); } }); }, {rootMargin: "600px 0px"});
+  var seen = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) play(e.target); else if (!e.target.paused) e.target.pause(); }); }, {threshold: .35});
+  vids.forEach(function(v){ near.observe(v); seen.observe(v); });
 })();
 
 /* ---------------------------------------------------------------- lightbox, copy */

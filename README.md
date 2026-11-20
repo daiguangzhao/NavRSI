@@ -15,6 +15,9 @@ A static site: `index.html` and `assets/`, with no build step and no framework. 
   This includes the in-distribution part of the held-out sets in Results (Table 5: 537 held-out R2R-CE val-unseen
   episodes, three LLMs, NavRSI vs. MIP and NavGPT-3); the out-of-distribution part (RxR-CE, NavRAG-CE) is the three cards below it and the pooled paired SR gaps, read from the RQ3 sentence in `sec/4_experiments.tex`.
 - `assets/*.webp` are the paper's figures.
+- `assets/videos/g1_run{1,2}.mp4` are the two real-robot runs in the Real world section, at 3x speed without audio
+  (`ffmpeg -i <recording> -an -vf "setpts=PTS/3,fps=30" -c:v libx264 -preset slow -crf 26 -pix_fmt yuv420p -movflags +faststart`),
+  with their first-second frames as posters (`g1_run{1,2}.webp`). They load only when they come near the viewport.
 - `tools/build_single.py` writes `preview_single.html`, a one-file copy with everything inlined, for offline previews.
 
 ## Hero particles
