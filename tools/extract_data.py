@@ -51,6 +51,25 @@ for line in (A / "r2r_mip_compare.tex").read_text().splitlines():
 for a, b in zip(srows[0::2], srows[1::2]):
     assert a[0] == "Seed 0" and "NavRSI" in b[0] and a[1] == b[1], (a[:2], b[:2])
     seed.append({"llm": a[1], "seed": num(a[2])[0], "ours": num(b[2])[0]})
+# Table 5: the 537 held-out R2R-CE val-unseen episodes, three methods per LLM backbone (mean and s.d. of three runs)
+heldout, llm = [], None
+HKEYS = ["ne", "osr", "sr", "spl", "ndtw", "gpu", "cost", "tokens", "tokens_sr", "cost_sr"]
+for line in (A / "r2r_heldout_llms.tex").read_text().splitlines():
+    m = re.search(r"LLM backbone: ([^}]+)\}", line)
+    if m:
+        llm = {"llm": m.group(1).strip(), "rows": []}; heldout.append(llm); continue
+    if line.startswith("%") or line.count("&") != 10 or "rowcolor" in line: continue
+    c = [x.strip() for x in clean(line).rstrip("\\ ").split("&")]
+    name = re.sub(r"\\flame|\\textsc\{|\\textbf\{|\(ours\)|[{}~]", "", c[0]).strip()
+    name = re.sub(r"\s+", " ", name)
+    llm["rows"].append({"method": name, "ours": name == "NavRSI", "vla": "VLA" in name,
+                        "v": {k: num(x)[0] for k, x in zip(HKEYS, c[1:])}, "sd": {k: num(x)[1] for k, x in zip(HKEYS[:5], c[1:6])}})
+assert len(heldout) == 3 and all([r["method"] for r in h["rows"]] == ["MIP", "NavGPT-3 + 8B VLA", "NavRSI"] for h in heldout), heldout
+# the pooled paired SR gaps over the three LLMs, from the RQ3 text
+t = (A.parent / "sec/4_experiments.tex").read_text()
+m = re.search(r"its SR is ([0-9.]+)~\$\\pm\$~([0-9.]+) above MIP and ([0-9.]+)~\$\\pm\$~([0-9.]+) above NavGPT-3", t)
+assert m, "RQ3 paired-gap sentence not found"
+heldout_gap = {"mip": [float(m.group(1)), float(m.group(2))], "navgpt3": [float(m.group(3)), float(m.group(4))]}
 # rows measured after the paper (tools/extra_native.json), placed after the last row of the same native harness
 extra = json.loads((pathlib.Path(__file__).resolve().parent / "extra_native.json").read_text())
 for x in extra:
@@ -65,8 +84,12 @@ derived = {"n_llms": len(native), "n_vendors": len({r["vendor"] for r in native}
            "max_gain": max(gains), "max_gain_llm": native[gains.index(max(gains))]["llm"],
            "codex_cost_native": round(sum(r["native"]["cost"] for r in gpt4) / 4, 4), "codex_cost_ours": round(sum(r["ours"]["cost"] for r in gpt4) / 4, 4)}
 derived["codex_cost_drop_pct"] = round(100 * (1 - derived["codex_cost_ours"] / derived["codex_cost_native"]), 1)
-data = {"native": native, "sota": sota, "real": real, "seed": seed, "derived": derived}
+derived["heldout_best_sr"] = sum(max(h["rows"], key=lambda r: r["v"]["sr"])["ours"] for h in heldout)
+derived["heldout_n_llms"] = len(heldout)
+data = {"native": native, "sota": sota, "real": real, "seed": seed, "heldout": heldout, "heldout_gap": heldout_gap, "derived": derived}
 OUT.write_text("window.NAVRSI_DATA = " + json.dumps(data, indent=1) + ";\n")
 print(json.dumps(derived)); print(len(native), "LLM pairs;", len(sota), "full-split rows;", real)
 print([(r["llm"], r["native"]["sr"], r["ours"]["sr"]) for r in native])
 print([(r["method"], r["r2r"]["sr"], r["rxr"]["sr"]) for r in sota]); print(seed)
+for h in heldout: print(h["llm"], [(r["method"], r["v"]["sr"], r["sd"]["sr"], r["v"]["tokens"], r["v"]["gpu"]) for r in h["rows"]])
+print("paired gaps", heldout_gap)

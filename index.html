@@ -367,7 +367,8 @@ figcaption,.cap{color:var(--muted);font-size:14.5px;margin-top:13px;max-width:62
   background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.5) 50%,transparent 60%) 100% 0/250% 100% no-repeat;animation:glintloop 9s linear 2.4s infinite}
 .lb-row.ours .lb-name{color:#fff;font-weight:600}
 .lb-num{position:absolute;right:9px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:12.5px;color:#e6ecff;font-weight:600}
-@media (max-width:640px){.lb-row{grid-template-columns:128px 1fr}.lb-name{font-size:12.5px}.lb-tag{display:none}}
+.lb-sd{color:#aab6d6;font-weight:500}
+@media (max-width:640px){.lb-row{grid-template-columns:128px 1fr}.lb-name{font-size:12.5px}.lb-tag{display:none}.lb-sd{display:none}}
 
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
 .grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
@@ -489,6 +490,7 @@ footer a:hover{color:var(--text)}
       </div>
     </div>
     <div class="chips reveal">
+      <span class="chip">537 held-out episodes, best SR with <b><span id="heldBest">3</span> / <span id="heldN">3</span> LLMs</b></span>
       <span class="chip">RxR-CE, harness unchanged <b>88.96 SR</b></span>
       <span class="chip">NavRAG-CE <b>39.7 SR</b></span>
       <span class="chip">Unitree G1 humanoid <b>48 SR</b></span>
@@ -686,6 +688,15 @@ footer a:hover{color:var(--text)}
     </div>
     <div class="card chart reveal" id="sotaChart"></div>
     <p class="cap reveal" id="sotaCap"></p>
+
+    <h3 class="sub reveal" id="heldout">Held-out episodes</h3>
+    <p class="subp reveal">The full R2R-CE split contains the development episodes used to select the final harness. On its other 537 episodes, never used in the search or the selection, NavRSI, MIP and NavGPT-3 run with the same LLM at its default reasoning effort. The two GPT-6.2 LLMs were never used in RSI either.</p>
+    <div class="toolbar reveal">
+      <div class="seg" id="segHeldLLM" role="tablist" aria-label="LLM backbone"></div>
+      <div class="seg" id="segHeldMetric" role="tablist" aria-label="Metric"><button class="on" data-m="sr">SR</button><button data-m="tokens">Tokens</button></div>
+    </div>
+    <div class="card chart reveal" id="heldChart"></div>
+    <p class="cap reveal" id="heldCap"></p>
 
     <div class="grid3">
       <div class="card mini reveal"><div class="lab">Cross-dataset</div><div class="big grad">88.96<small>SR</small></div><p>The final harness runs on RxR-CE unchanged, with the best nDTW of 78.97, although most trained methods learn from RxR-CE data.</p></div>
@@ -1491,6 +1502,32 @@ var D = window.NAVRSI_DATA || {native: [], sota: [], real: [], derived: {}};
     };
     $$("#segSplit button").forEach(function(b){ b.addEventListener("click", function(){ $$("#segSplit button").forEach(function(o){ o.classList.toggle("on", o === b); }); draw(b.getAttribute("data-s")); }); });
     draw("r2r");
+  }
+  /* held-out episodes (paper Table 5): one LLM at a time, SR (higher is better) or tokens per episode (fewer is better) */
+  var held = $("#heldChart");
+  if (held && D.heldout && D.heldout.length){
+    var der = D.derived || {};
+    if (der.heldout_n_llms){ $("#heldBest").textContent = der.heldout_best_sr; $("#heldN").textContent = der.heldout_n_llms; }
+    var hl = 0, hm = "sr", pm = function(v, sd, html){ return v.toFixed(1) + (sd != null ? (html ? '<span class="lb-sd"> ± ' + sd.toFixed(1) + "</span>" : " ± " + sd.toFixed(1)) : ""); };
+    var tokMax = Math.max.apply(0, D.heldout.map(function(h){ return Math.max.apply(0, h.rows.map(function(r){ return r.v.tokens; })); }));
+    $("#segHeldLLM").innerHTML = D.heldout.map(function(h, i){ return '<button' + (i === hl ? ' class="on"' : "") + ' data-i="' + i + '">' + h.llm + "</button>"; }).join("");
+    var hdraw = function(){
+      var h = D.heldout[hl], sr = hm === "sr";
+      var it = h.rows.map(function(r){
+        var short = r.method.replace(" + 8B VLA", "");
+        return {name: short, v: sr ? r.v.sr : r.v.tokens, txt: sr ? pm(r.v.sr, r.sd.sr, true) : r.v.tokens.toFixed(0) + "k", ours: r.ours,
+                tag: r.vla ? "8B VLA" : (r.ours ? "ours" : ""), free: r.ours};
+      }).sort(function(a, b){ return sr ? b.v - a.v : a.v - b.v; });
+      bars(held, it, sr ? 100 : tokMax * 1.08, sr ? 50 : 0);
+      var o = h.rows.filter(function(r){ return r.ours; })[0], mip = h.rows.filter(function(r){ return r.method === "MIP"; })[0], ng = h.rows.filter(function(r){ return r.vla; })[0], g = D.heldout_gap;
+      $("#heldCap").innerHTML = sr
+        ? "<b>" + h.llm + ", SR on 537 held-out episodes</b> (mean &plusmn; s.d. of three runs). NavRSI reaches " + pm(o.v.sr, o.sd.sr) + ", against " + mip.v.sr.toFixed(1) + " for MIP and " + ng.v.sr.toFixed(1) + " for NavGPT-3." +
+          (g ? " Over the three LLMs, NavRSI is +" + g.mip[0].toFixed(1) + " &plusmn; " + g.mip[1].toFixed(1) + " SR above MIP and +" + g.navgpt3[0].toFixed(1) + " &plusmn; " + g.navgpt3[1].toFixed(1) + " above NavGPT-3 (paired over episodes, s.e.)." : "")
+        : "<b>" + h.llm + ", tokens per episode</b> (fewer is better). NavRSI uses " + o.v.tokens.toFixed(0) + "k, against " + mip.v.tokens.toFixed(0) + "k for MIP and " + ng.v.tokens.toFixed(0) + "k for NavGPT-3, which also runs an 8B VLA in " + ng.v.gpu.toFixed(2) + " GB of GPU memory (" + o.v.gpu.toFixed(2) + " GB for NavRSI).";
+    };
+    $$("#segHeldLLM button").forEach(function(b){ b.addEventListener("click", function(){ $$("#segHeldLLM button").forEach(function(x){ x.classList.toggle("on", x === b); }); hl = +b.getAttribute("data-i"); hdraw(); }); });
+    $$("#segHeldMetric button").forEach(function(b){ b.addEventListener("click", function(){ $$("#segHeldMetric button").forEach(function(x){ x.classList.toggle("on", x === b); }); hm = b.getAttribute("data-m"); hdraw(); }); });
+    hdraw();
   }
   var real = $("#realChart");
   if (real && D.real.length){

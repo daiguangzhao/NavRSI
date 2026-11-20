@@ -950,6 +950,249 @@ window.NAVRSI_DATA = {
    "ours": 78.3
   }
  ],
+ "heldout": [
+  {
+   "llm": "GPT-6.2-Astra",
+   "rows": [
+    {
+     "method": "MIP",
+     "ours": false,
+     "vla": false,
+     "v": {
+      "ne": 2.02,
+      "osr": 89.8,
+      "sr": 86.8,
+      "spl": 73.6,
+      "ndtw": 76.3,
+      "gpu": 0.93,
+      "cost": 0.231,
+      "tokens": 204.0,
+      "tokens_sr": 235.0,
+      "cost_sr": 0.266
+     },
+     "sd": {
+      "ne": 0.04,
+      "osr": 0.2,
+      "sr": 0.4,
+      "spl": 0.5,
+      "ndtw": 0.4
+     }
+    },
+    {
+     "method": "NavGPT-3 + 8B VLA",
+     "ours": false,
+     "vla": true,
+     "v": {
+      "ne": 1.88,
+      "osr": 90.1,
+      "sr": 86.5,
+      "spl": 75.3,
+      "ndtw": 73.1,
+      "gpu": 18.97,
+      "cost": 0.205,
+      "tokens": 95.0,
+      "tokens_sr": 110.0,
+      "cost_sr": 0.237
+     },
+     "sd": {
+      "ne": 0.02,
+      "osr": 0.2,
+      "sr": 0.5,
+      "spl": 0.7,
+      "ndtw": 0.2
+     }
+    },
+    {
+     "method": "NavRSI",
+     "ours": true,
+     "vla": false,
+     "v": {
+      "ne": 1.64,
+      "osr": 92.7,
+      "sr": 90.3,
+      "spl": 77.2,
+      "ndtw": 80.0,
+      "gpu": 0.93,
+      "cost": 0.229,
+      "tokens": 76.0,
+      "tokens_sr": 84.0,
+      "cost_sr": 0.254
+     },
+     "sd": {
+      "ne": 0.07,
+      "osr": 0.5,
+      "sr": 0.5,
+      "spl": 0.9,
+      "ndtw": 1.0
+     }
+    }
+   ]
+  },
+  {
+   "llm": "GPT-6.2-Sol",
+   "rows": [
+    {
+     "method": "MIP",
+     "ours": false,
+     "vla": false,
+     "v": {
+      "ne": 2.42,
+      "osr": 88.8,
+      "sr": 83.9,
+      "spl": 71.2,
+      "ndtw": 73.8,
+      "gpu": 0.93,
+      "cost": 0.1,
+      "tokens": 317.0,
+      "tokens_sr": 378.0,
+      "cost_sr": 0.119
+     },
+     "sd": {
+      "ne": 0.24,
+      "osr": 0.5,
+      "sr": 1.0,
+      "spl": 0.9,
+      "ndtw": 0.6
+     }
+    },
+    {
+     "method": "NavGPT-3 + 8B VLA",
+     "ours": false,
+     "vla": true,
+     "v": {
+      "ne": 1.93,
+      "osr": 89.8,
+      "sr": 85.3,
+      "spl": 74.6,
+      "ndtw": 73.5,
+      "gpu": 18.97,
+      "cost": 0.073,
+      "tokens": 143.0,
+      "tokens_sr": 168.0,
+      "cost_sr": 0.086
+     },
+     "sd": {
+      "ne": 0.1,
+      "osr": 0.5,
+      "sr": 0.0,
+      "spl": 0.3,
+      "ndtw": 0.7
+     }
+    },
+    {
+     "method": "NavRSI",
+     "ours": true,
+     "vla": false,
+     "v": {
+      "ne": 2.03,
+      "osr": 91.8,
+      "sr": 87.8,
+      "spl": 76.2,
+      "ndtw": 78.8,
+      "gpu": 0.93,
+      "cost": 0.1,
+      "tokens": 134.0,
+      "tokens_sr": 152.0,
+      "cost_sr": 0.114
+     },
+     "sd": {
+      "ne": 0.11,
+      "osr": 0.6,
+      "sr": 0.4,
+      "spl": 0.5,
+      "ndtw": 0.6
+     }
+    }
+   ]
+  },
+  {
+   "llm": "GPT-6-Astra",
+   "rows": [
+    {
+     "method": "MIP",
+     "ours": false,
+     "vla": false,
+     "v": {
+      "ne": 2.7,
+      "osr": 85.5,
+      "sr": 81.2,
+      "spl": 69.9,
+      "ndtw": 72.5,
+      "gpu": 0.93,
+      "cost": 0.868,
+      "tokens": 514.0,
+      "tokens_sr": 634.0,
+      "cost_sr": 1.069
+     },
+     "sd": {
+      "ne": 0.1,
+      "osr": 0.4,
+      "sr": 0.2,
+      "spl": 0.2,
+      "ndtw": 0.2
+     }
+    },
+    {
+     "method": "NavGPT-3 + 8B VLA",
+     "ours": false,
+     "vla": true,
+     "v": {
+      "ne": 2.15,
+      "osr": 87.8,
+      "sr": 80.9,
+      "spl": 72.1,
+      "ndtw": 73.2,
+      "gpu": 18.97,
+      "cost": 0.587,
+      "tokens": 246.0,
+      "tokens_sr": 304.0,
+      "cost_sr": 0.725
+     },
+     "sd": {
+      "ne": 0.07,
+      "osr": 0.2,
+      "sr": 0.3,
+      "spl": 0.4,
+      "ndtw": 0.4
+     }
+    },
+    {
+     "method": "NavRSI",
+     "ours": true,
+     "vla": false,
+     "v": {
+      "ne": 2.45,
+      "osr": 86.7,
+      "sr": 82.8,
+      "spl": 72.1,
+      "ndtw": 74.9,
+      "gpu": 0.93,
+      "cost": 0.514,
+      "tokens": 143.0,
+      "tokens_sr": 173.0,
+      "cost_sr": 0.62
+     },
+     "sd": {
+      "ne": 0.09,
+      "osr": 1.1,
+      "sr": 0.6,
+      "spl": 0.8,
+      "ndtw": 0.7
+     }
+    }
+   ]
+  }
+ ],
+ "heldout_gap": {
+  "mip": [
+   3.0,
+   0.7
+  ],
+  "navgpt3": [
+   2.8,
+   1.2
+  ]
+ },
  "derived": {
   "n_llms": 17,
   "n_vendors": 4,
@@ -957,7 +1200,9 @@ window.NAVRSI_DATA = {
   "max_gain": 11.3,
   "max_gain_llm": "gpt-5.6-sol",
   "codex_cost_native": 0.2828,
-  "codex_cost_ours": 0.0892,
-  "codex_cost_drop_pct": 68.5
+  "codex_cost_ours": 0.0893,
+  "codex_cost_drop_pct": 68.4,
+  "heldout_best_sr": 3,
+  "heldout_n_llms": 3
  }
 };
