@@ -378,6 +378,13 @@ figcaption,.cap{color:var(--muted);font-size:14.5px;margin-top:13px;max-width:62
 @media (max-width:900px){.grid3,.grid2{grid-template-columns:1fr}}
 .sub{font-family:var(--display);font-weight:600;font-size:clamp(20px,2.2vw,26px);letter-spacing:-.01em;margin:54px 0 8px}
 .subp{color:var(--muted);margin:0 0 20px;max-width:50em;font-size:15.5px}
+.loopgrid{align-items:stretch}
+.loopgrid>.figcol{display:flex;flex-direction:column}
+.loopgrid>.figcol .fig{flex:1;display:flex;align-items:center}
+.seedcard{display:flex;flex-direction:column}
+.seedcard #seedChart{flex:1;display:flex;flex-direction:column;justify-content:space-evenly;margin-top:10px}
+#seedChart .db-row,#seedChart .db-axis{grid-template-columns:minmax(104px,132px) 1fr 54px}
+@media (max-width:640px){#seedChart .db-row,#seedChart .db-axis{grid-template-columns:92px 1fr 46px;gap:8px}}
 .hk{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:26px 0 10px}
 .hk-tag{font-family:var(--mono);font-size:11.5px;letter-spacing:1.3px;text-transform:uppercase;border-radius:999px;padding:4px 12px;color:var(--c1);border:1px solid rgba(88,225,255,.45);background:rgba(88,225,255,.07)}
 .hk-tag.ood{color:#c9b2ff;border-color:rgba(169,124,255,.5);background:rgba(169,124,255,.08)}
@@ -720,12 +727,12 @@ footer a:hover{color:var(--text)}
       <div class="card mini reveal" style="--d:90ms"><div class="lab">Not in one shot</div><div class="big grad">+10.89<small>SR</small></div><p>Three harnesses written in one shot by the same designer all fall below Seed&nbsp;0. NavRSI is +10.89 &plusmn; 2.82 SR above their mean.</p></div>
       <div class="card mini reveal" style="--d:180ms"><div class="lab">Experience</div><div class="big grad">52.8% &rarr; 0%</div><p>With no record of earlier rounds, 52.8% of new rewrites repeat an earlier one. With the experience alone, none do, at 2.2k words in place of 13.1M.</p></div>
     </div>
-    <div class="grid2" style="margin-top:16px;align-items:start">
-      <div class="reveal"><figure class="fig" data-zoom="assets/evolution.webp"><img src="assets/evolution.webp" alt="Search-set SR of all 24 rewrites and each round's experience" loading="lazy" width="1365" height="579"><span class="zoom">Click to zoom</span></figure>
+    <div class="grid2 loopgrid" style="margin-top:16px">
+      <div class="reveal figcol"><figure class="fig" data-zoom="assets/evolution.webp"><img src="assets/evolution.webp" alt="Search-set SR of all 24 rewrites and each round's experience" loading="lazy" width="1365" height="579"><span class="zoom">Click to zoom</span></figure>
         <p class="cap"><b>Harness rewriting in RSI.</b> Top: search-set SR of all 24 rewrites. Bottom: each round's experience from the designer.</p></div>
-      <div class="card reveal" style="--d:100ms">
+      <div class="card reveal seedcard" style="--d:100ms">
         <h3>From Seed 0 to the final harness</h3>
-        <p style="margin-bottom:12px">SR on R2R-CE-100, mean of three runs.</p>
+        <p>SR on R2R-CE-100, mean of three runs. Grey dot: Seed&nbsp;0. Bright dot: NavRSI.</p>
         <div id="seedChart"></div>
       </div>
     </div>
@@ -1546,8 +1553,22 @@ var D = window.NAVRSI_DATA || {native: [], sota: [], real: [], derived: {}};
   }
   var seed = $("#seedChart");
   if (seed && D.seed && D.seed.length){
-    var it = []; D.seed.forEach(function(r){ it.push({name: r.llm + " · Seed 0", v: r.seed, txt: r.seed.toFixed(1)}); it.push({name: r.llm + " · NavRSI", v: r.ours, txt: r.ours.toFixed(1), ours: true, tag: "+" + (r.ours - r.seed).toFixed(1), free: true}); });
-    bars(seed, it, 90, 30);
+    var lo = 40, hi = 90, P = function(v){ return (v - lo) / (hi - lo) * 100; };
+    seed.innerHTML = D.seed.map(function(r){
+      var d = r.ours - r.seed;
+      return '<div class="db-row"><div class="db-name"><span>' + r.llm + '</span></div><div class="db-track"><i class="db-link' + (d < 0 ? " worse" : "") + '"></i><i class="db-dot n"></i><i class="db-dot o"></i>' +
+        '<span class="db-val n">' + r.seed.toFixed(1) + '</span><span class="db-val o">' + r.ours.toFixed(1) + '</span></div><div class="db-gain' + (d < 0 ? " worse" : "") + '">' + (d >= 0 ? "+" : "\u2212") + Math.abs(d).toFixed(1) + "</div></div>";
+    }).join("") + '<div class="db-axis"><div></div><div><span>' + lo + '</span><span>SR  \u2192 better</span><span>' + hi + '</span></div><div>&Delta;</div></div>';
+    var place = function(on){
+      $$(".db-row", seed).forEach(function(el, i){
+        var r = D.seed[i], a = on ? P(r.seed) : 0, b = on ? P(r.ours) : 0, k = $(".db-link", el);
+        k.style.left = Math.min(a, b) + "%"; k.style.width = Math.abs(b - a) + "%";
+        $(".db-dot.n", el).style.left = a + "%"; $(".db-dot.o", el).style.left = b + "%"; $(".db-val.n", el).style.left = a + "%"; $(".db-val.o", el).style.left = b + "%";
+      });
+    };
+    place(false);
+    var box = seed.closest(".reveal");
+    if (box && !box.classList.contains("in")) box.addEventListener("revealed", function(){ setTimeout(function(){ place(true); }, 150); }, {once: true}); else setTimeout(function(){ place(true); }, 60);
   }
 })();
 
