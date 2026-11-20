@@ -12,8 +12,8 @@ A static site: `index.html` and `assets/`, with no build step and no framework. 
 
 - `assets/data.js` holds the numbers behind the interactive charts. It is generated from the paper's table sources by
   `tools/extract_data.py`.
-  This includes the held-out block in Results (Table 5: 537 held-out R2R-CE val-unseen episodes, three LLMs, NavRSI vs.
-  MIP and NavGPT-3) and the pooled paired SR gaps, read from the RQ3 sentence in `sec/4_experiments.tex`.
+  This includes the in-distribution part of the held-out sets in Results (Table 5: 537 held-out R2R-CE val-unseen
+  episodes, three LLMs, NavRSI vs. MIP and NavGPT-3); the out-of-distribution part (RxR-CE, NavRAG-CE) is the three cards below it and the pooled paired SR gaps, read from the RQ3 sentence in `sec/4_experiments.tex`.
 - `assets/*.webp` are the paper's figures.
 - `tools/build_single.py` writes `preview_single.html`, a one-file copy with everything inlined, for offline previews.
 

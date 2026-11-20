@@ -378,6 +378,10 @@ figcaption,.cap{color:var(--muted);font-size:14.5px;margin-top:13px;max-width:62
 @media (max-width:900px){.grid3,.grid2{grid-template-columns:1fr}}
 .sub{font-family:var(--display);font-weight:600;font-size:clamp(20px,2.2vw,26px);letter-spacing:-.01em;margin:54px 0 8px}
 .subp{color:var(--muted);margin:0 0 20px;max-width:50em;font-size:15.5px}
+.hk{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:26px 0 10px}
+.hk-tag{font-family:var(--mono);font-size:11.5px;letter-spacing:1.3px;text-transform:uppercase;border-radius:999px;padding:4px 12px;color:var(--c1);border:1px solid rgba(88,225,255,.45);background:rgba(88,225,255,.07)}
+.hk-tag.ood{color:#c9b2ff;border-color:rgba(169,124,255,.5);background:rgba(169,124,255,.08)}
+.hk-what{font-family:var(--display);font-weight:600;font-size:17px;color:var(--text)}
 
 /* real world */
 .rw{display:grid;grid-template-columns:1fr 1.25fr;gap:16px;margin-top:26px}
@@ -490,9 +494,9 @@ footer a:hover{color:var(--text)}
       </div>
     </div>
     <div class="chips reveal">
-      <span class="chip">537 held-out episodes, best SR with <b><span id="heldBest">3</span> / <span id="heldN">3</span> LLMs</b></span>
-      <span class="chip">RxR-CE, harness unchanged <b>88.96 SR</b></span>
-      <span class="chip">NavRAG-CE <b>39.7 SR</b></span>
+      <span class="chip">In-distribution held-out, best SR with <b><span id="heldBest">3</span> / <span id="heldN">3</span> LLMs</b></span>
+      <span class="chip">OOD held-out RxR-CE, harness unchanged <b>88.96 SR</b></span>
+      <span class="chip">OOD held-out NavRAG-CE <b>39.7 SR</b></span>
       <span class="chip">Unitree G1 humanoid <b>48 SR</b></span>
       <span class="chip">GPU memory <b>0.93 GB</b></span>
       <span class="chip">Extra tools, memory or agent roles <b>0</b></span>
@@ -689,8 +693,11 @@ footer a:hover{color:var(--text)}
     <div class="card chart reveal" id="sotaChart"></div>
     <p class="cap reveal" id="sotaCap"></p>
 
-    <h3 class="sub reveal" id="heldout">Held-out episodes</h3>
-    <p class="subp reveal">The full R2R-CE split contains the development episodes used to select the final harness. On its other 537 episodes, never used in the search or the selection, NavRSI, MIP and NavGPT-3 run with the same LLM at its default reasoning effort. The two GPT-6.2 LLMs were never used in RSI either.</p>
+    <h3 class="sub reveal" id="heldout">Held-out sets</h3>
+    <p class="subp reveal">Two kinds of held-out sets, as in the paper. Neither enters the RSI search or the selection of the final harness.</p>
+
+    <div class="hk reveal"><span class="hk-tag">In-distribution held-out</span><span class="hk-what">R2R-CE val-unseen, 537 episodes</span></div>
+    <p class="subp reveal">The full R2R-CE split above includes the development set (1302 episodes) that selected the final harness. Its other 537 episodes share no path with that set. They include R2R-CE-100, so every R2R-CE-100 result on this page is held-out too. NavRSI, MIP and NavGPT-3 run with the same LLM at its default reasoning effort, and the two GPT-6.2 LLMs were never used in RSI either.</p>
     <div class="toolbar reveal">
       <div class="seg" id="segHeldLLM" role="tablist" aria-label="LLM backbone"></div>
       <div class="seg" id="segHeldMetric" role="tablist" aria-label="Metric"><button class="on" data-m="sr">SR</button><button data-m="tokens">Tokens</button></div>
@@ -698,10 +705,12 @@ footer a:hover{color:var(--text)}
     <div class="card chart reveal" id="heldChart"></div>
     <p class="cap reveal" id="heldCap"></p>
 
-    <div class="grid3">
-      <div class="card mini reveal"><div class="lab">Cross-dataset</div><div class="big grad">88.96<small>SR</small></div><p>The final harness runs on RxR-CE unchanged, with the best nDTW of 78.97, although most trained methods learn from RxR-CE data.</p></div>
-      <div class="card mini reveal" style="--d:90ms"><div class="lab">NavRAG-CE</div><div class="big grad">39.7<small>SR</small></div><p>With the same LLM as the LLM-based baselines: +10.3 &plusmn; 4.2 over NavGPT-3 and +5.3 &plusmn; 3.2 over MIP (paired, s.e.).</p></div>
-      <div class="card mini reveal" style="--d:180ms"><div class="lab">Light deployment</div><div class="big grad">0.93<small>GB</small></div><p>GPU memory instead of 18.97 GB for NavGPT-3 on the same 800 RxR-CE episodes, at on-par SR.</p></div>
+    <div class="hk reveal" style="margin-top:40px"><span class="hk-tag ood">Out-of-distribution held-out</span><span class="hk-what">RxR-CE full val-unseen split, NavRAG-CE subset</span></div>
+    <p class="subp reveal">Two datasets RSI never used. The final harness runs on them unchanged, with no tuning.</p>
+    <div class="grid3" style="margin-top:0">
+      <div class="card mini reveal"><div class="lab">RxR-CE &middot; full split</div><div class="big grad">88.96<small>SR</small></div><p>All 3669 English val-unseen episodes, with the best nDTW of 78.97, although most trained methods learn from RxR-CE data.</p></div>
+      <div class="card mini reveal" style="--d:90ms"><div class="lab">NavRAG-CE &middot; 100 episodes</div><div class="big grad">39.7<small>SR</small></div><p>With the same LLM as the LLM-based baselines: +10.3 &plusmn; 4.2 over NavGPT-3 and +5.3 &plusmn; 3.2 over MIP (paired, s.e.).</p></div>
+      <div class="card mini reveal" style="--d:180ms"><div class="lab">RxR-CE &middot; light deployment</div><div class="big grad">0.93<small>GB</small></div><p>GPU memory instead of 18.97 GB for NavGPT-3 on the same 800 RxR-CE episodes, at on-par SR (+0.5 &plusmn; 1.3).</p></div>
     </div>
 
     <h3 class="sub reveal">Does the loop matter?</h3>
@@ -1497,8 +1506,8 @@ var D = window.NAVRSI_DATA || {native: [], sota: [], real: [], derived: {}};
       bars(sota, it, 100, 30);
       var o = D.sota.filter(function(r){ return /NavRSI/.test(r.method); })[0], n = D.sota.filter(function(r){ return /NavGPT-3/.test(r.method); })[0];
       $("#sotaCap").innerHTML = split === "r2r"
-        ? "<b>R2R-CE val-unseen (1,839 episodes).</b> NavRSI reaches " + o.r2r.sr + " SR and " + o.r2r.spl + " SPL, the best among all methods. Tags show external training data. NavGPT-3 pairs the same LLM with a trained 8B VLA and takes panoramic RGB-D with odometry."
-        : "<b>RxR-CE val-unseen.</b> The harness found on R2R-CE runs unchanged and reaches " + o.rxr.sr + " SR with the best nDTW of " + o.rxr.ndtw + ". NavGPT-3 reports " + n.rxr.sr + " SR with its trained VLA and panoramic RGB-D.";
+        ? "<b>R2R-CE val-unseen (1,839 episodes).</b> NavRSI reaches " + o.r2r.sr + " SR and " + o.r2r.spl + " SPL, the best among all methods. Tags show external training data. NavGPT-3 pairs the same LLM with a trained 8B VLA and takes panoramic RGB-D with odometry. For the 537 held-out episodes of this split, see the held-out sets below."
+        : "<b>RxR-CE val-unseen.</b> The harness found on R2R-CE runs unchanged and reaches " + o.rxr.sr + " SR with the best nDTW of " + o.rxr.ndtw + ". NavGPT-3 reports " + n.rxr.sr + " SR with its trained VLA and panoramic RGB-D. RxR-CE is an out-of-distribution held-out set.";
     };
     $$("#segSplit button").forEach(function(b){ b.addEventListener("click", function(){ $$("#segSplit button").forEach(function(o){ o.classList.toggle("on", o === b); }); draw(b.getAttribute("data-s")); }); });
     draw("r2r");
