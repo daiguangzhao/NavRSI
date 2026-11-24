@@ -4,7 +4,7 @@ Source of the project page of **NavRSI: Recursive Harness Self-Improvement for V
 
 Live page: https://daiguangzhao.github.io/NavRSI/
 
-The paper and the source code will be linked from the page once they are released.
+Paper: https://arxiv.org/abs/2611.27499 (the Paper button and the BibTeX entry point to it). The source code will be linked once it is released.
 
 ## About this repository
 
